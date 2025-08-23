@@ -33,22 +33,22 @@ BEGIN
         PRINT '>> Inserting Data Into: silver.crm_cust_info';
         INSERT INTO silver.crm_cust_info(
             cst_id, cst_key, cst_firstname, cst_lastname,
-            cst_material_status, cst_gndr, cst_create_date
+            cst_marital_status, cst_gndr, cst_create_date
         )
         SELECT 
             cst_id, cst_key,
-            TRIM(cst_firstname),
-            TRIM(cst_lastname),
+            TRIM(cst_firstname) AS cst_firstname,
+            TRIM(cst_lastname) AS cst_lastname,
             CASE 
-                WHEN UPPER(TRIM(cst_material_status)) = 'S' THEN 'Single'
-                WHEN UPPER(TRIM(cst_material_status)) = 'M' THEN 'Married'
+                WHEN UPPER(TRIM(cst_marital_status)) = 'S' THEN 'Single'
+                WHEN UPPER(TRIM(cst_marital_status)) = 'M' THEN 'Married'
                 ELSE 'n/a'
-            END,
+            END AS cst_marital_status, -- Normalize marital status values to readable format
             CASE 
                 WHEN UPPER(TRIM(cst_gndr)) = 'F' THEN 'Female'
                 WHEN UPPER(TRIM(cst_gndr)) = 'M' THEN 'Male'
                 ELSE 'n/a'
-            END,
+            END AS cst_gndr, -- Normalize gender values to readable format
             cst_create_date
         FROM (
             SELECT *,
@@ -56,7 +56,7 @@ BEGIN
             FROM bronze.crm_cust_info
             WHERE cst_id IS NOT NULL
         ) t
-        WHERE flag_last = 1;
+        WHERE flag_last = 1; -- Select only the most recent record for each customer
 
         SET @end_time = GETDATE();
         PRINT '>> Load Duration: ' + CAST(DATEDIFF(second, @start_time, @end_time) AS NVARCHAR) + ' second';
@@ -168,13 +168,13 @@ BEGIN
         PRINT '>> Inserting Data Into: silver.erp_loc_a101';
         INSERT INTO silver.erp_loc_a101 (cid, cntry)
         SELECT 
-            REPLACE(cid, '-', ''),
+            REPLACE(cid, '-', '') cid,
             CASE 
-                WHEN TRIM(REPLACE(REPLACE(cntry, CHAR(13), ''), CHAR(10), '')) = 'DE' THEN 'Germany'
-                WHEN TRIM(REPLACE(REPLACE(cntry, CHAR(13), ''), CHAR(10), '')) IN ('US', 'USA') THEN 'United States'
-                WHEN TRIM(REPLACE(REPLACE(cntry, CHAR(13), ''), CHAR(10), '')) = '' OR cntry IS NULL THEN 'n/a'
-                ELSE TRIM(REPLACE(REPLACE(cntry, CHAR(13), ''), CHAR(10), ''))
-            END
+                WHEN TRIM(REPLACE(cntry, CHAR(13), '')) = 'DE' THEN 'Germany'
+                WHEN TRIM(REPLACE(cntry, CHAR(13), '')) IN ('US', 'USA') THEN 'United States'
+                WHEN TRIM(REPLACE(cntry, CHAR(13), '')) = '' OR cntry IS NULL THEN 'n/a'
+                ELSE TRIM(REPLACE(cntry, CHAR(13), ''))
+            END AS cntry
         FROM bronze.erp_loc_a101;
 
         SET @end_time = GETDATE();
@@ -218,4 +218,3 @@ BEGIN
         PRINT '==============================================================='
     END CATCH
 END
-
