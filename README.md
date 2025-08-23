@@ -114,5 +114,5 @@ Hi there! I'm Kal Son, currently on my journey to become a Data Analyst. I’m l
 
 Let's stay in touch and feel free to connect with me.
 
-[![Facebook](https://www.facebook.com/CSyRTM)
-[![linkedin](https://www.linkedin.com/in/kal-son-7ba45430b/)
+[![Facebook](https://img.shields.io/badge/Facebook-3D82ED?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/CSyRTM)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/kal-son-7ba45430b/))
